@@ -79,6 +79,18 @@ public class Server {
         response = ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(gson.toJson(filesStorage.GetFileContainers()));
         return response;
     }
+    @GetMapping("/TSFS/GetFileLocationAccordingToFileName")
+    public ResponseEntity<String> GetFileLocationAccordingToFileName(@RequestParam String fileName){
+        ResponseEntity<String> response;
+        String fileLocation = filesStorage.GetFileLocationByFileName(fileName);
+        if(fileLocation!=null){
+            response = ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(gson.toJson(fileLocation));
+        }
+        else {
+            response = ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(gson.toJson("Error getting file location"));
+        }
+        return response;
+    }
 
     private File copyFile(FileContainer fileContainer) throws IOException {
         File original = new File(fileContainer.getAbsolutePath());

@@ -19,4 +19,16 @@ public class FilesStorage {
         return fileList.toArray(fileList.toArray(new FileContainer[0]));
     }
 
+    public String GetFileLocationByFileName(String fileName){
+        String fileLocation = null;
+        for(FileContainer fileContainer:fileList){
+            if(fileContainer.getFileName().equals(fileName)){
+                fileLocation = fileContainer.getAbsolutePath();
+                break;
+            }
+        }
+
+        return fileLocation;
+    }
+
 }
