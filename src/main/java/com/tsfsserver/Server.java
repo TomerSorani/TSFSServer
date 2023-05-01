@@ -21,10 +21,16 @@ import java.util.Set;
 public class Server {
     private final Gson gson;
     private FilesStorage filesStorage;
+    private static FileRepoController fileRepoController;
 
     public Server() {
         this.gson = new Gson();
-        filesStorage = new FilesStorage();
+        filesStorage = new FilesStorage(fileRepoController);
+        filesStorage.AddFilesFromDB();
+    }
+
+    public static void UpdateFileRepoController(FileRepoController fileRepoController){
+        Server.fileRepoController = fileRepoController;
     }
 
     @GetMapping("/TSFS/GetLinesAccordingToCity")
@@ -63,10 +69,11 @@ public class Server {
             File dest = copyFile(fileContainer);
             fileContainer.setAbsolutePath(dest.getAbsolutePath());
             filesStorage.AddToFileList(fileContainer);
+            //fileRepoController.SaveFileToDB(fileContainer); למחוק
             response = ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body("File added");
         }
         catch (IOException ioException){
-            response = ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body("Error occurred");
+            response = ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body("Error occurred");
         }
 
         return response;
@@ -79,6 +86,7 @@ public class Server {
         response = ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(gson.toJson(filesStorage.GetFileContainers()));
         return response;
     }
+
     @GetMapping("/TSFS/GetFileLocationAccordingToFileName")
     public ResponseEntity<String> GetFileLocationAccordingToFileName(@RequestParam String fileName){
         ResponseEntity<String> response;
@@ -89,6 +97,36 @@ public class Server {
         else {
             response = ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(gson.toJson("Error getting file location"));
         }
+        return response;
+    }
+
+    @GetMapping("/TSFS/Access")//was 'a'
+    public ResponseEntity<String> Access(@RequestParam String userName, @RequestParam String password){
+        ResponseEntity<String> response;
+
+        response = ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(gson.toJson("access approve"));
+        response = ResponseEntity.status(HttpStatus.FORBIDDEN).contentType(MediaType.APPLICATION_JSON).body(gson.toJson("access denied"));
+
+        return response;
+    }
+
+    @DeleteMapping("/TSFS/DeleteFilesFromDB")
+    public ResponseEntity<String> DeleteFilesFromDB(){
+        ResponseEntity<String> response;
+        filesStorage.RemoveAllFileFromDB();
+
+        response = ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(gson.toJson("all files has been deleted"));
+
+        return response;
+    }
+
+    @DeleteMapping("/TSFS/DeleteFile")
+    public ResponseEntity<String> DeleteFile(@RequestParam String fileName){
+        ResponseEntity<String> response;
+        filesStorage.DeleteFile(fileName);
+
+        response = ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(gson.toJson("all files has been deleted"));
+
         return response;
     }
 

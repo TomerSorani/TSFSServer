@@ -1,9 +1,18 @@
 package com.tsfsserver;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+@Document("File")
 public class FileContainer {
-    private String absolutePath;
+    @Id
     private String fileName;
+    @Field
+    private String absolutePath;
+    @Field
     private String startDay, startMonth, startYear, endDay, endMonth, endYear;
+    @Field
     private String[] citiesArray, linesArray;
 
     public FileContainer(String absolutePath, String fileName, String startDay, String startMonth, String startYear, String endDay, String endMonth, String endYear, String[] citiesArray, String[] linesArray) {

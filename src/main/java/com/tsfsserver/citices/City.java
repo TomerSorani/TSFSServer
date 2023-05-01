@@ -36,7 +36,7 @@ public enum City {
 
     ROSH_HAAYIN("ראש-העין", new Line[]{Line.L_67_ROSH_HAAYIN}),
 
-    ELAD("ראש-העין", new Line[]{Line.L_67_ROSH_HAAYIN}),
+    ELAD("אלעד", new Line[]{}),
 
     QUIRYAT_UNO("קריית-אונו", new Line[]{Line.L_468_KALANSUA,Line.L_505_RAANANA,Line.L_564_KFAR_SABA,Line.L_621_NETANYA}),
 
