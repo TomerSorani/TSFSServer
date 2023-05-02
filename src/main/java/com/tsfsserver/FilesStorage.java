@@ -1,7 +1,12 @@
 package com.tsfsserver;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FilesStorage {
     private List<FileContainer> fileList;
@@ -12,6 +17,10 @@ public class FilesStorage {
         this.fileRepoController = fileRepoController;
     }
 
+    public boolean CheckIfFileNameExist(String fileName){
+        return GetFileContainerByFileName(fileName) != null;
+    }
+
     public void AddToFileList(FileContainer fileContainer){
         fileList.add(fileContainer);
         fileRepoController.SaveFileToDB(fileContainer);
@@ -19,11 +28,26 @@ public class FilesStorage {
 
     public void DeleteFile(String fileName){
         FileContainer fileContainer = GetFileContainerByFileName(fileName);
-        fileRepoController.RemoveFileFromDB(fileContainer);
+        if(fileContainer != null){
+            fileList.remove(fileContainer);
+            fileRepoController.RemoveFileFromDB(fileContainer);
+            try {
+                deleteSavedFileFromDirectory(fileContainer);
+            }
+            catch (IOException ioException){
+                System.out.println(ioException.getMessage());
+            }
+        }
     }
 
     public void RemoveAllFileFromDB(){
-        fileRepoController.RemoveAllFileFromDB();
+        List<String> fileNames = fileList.stream()
+                .map(FileContainer::getFileName)
+                .collect(Collectors.toList());
+
+        for(String fileName : fileNames){
+            DeleteFile(fileName);
+        }
     }
 
     public FileContainer[] GetFileContainers(){
@@ -54,12 +78,31 @@ public class FilesStorage {
         return res;
     }
 
-    public void AddFilesFromDB(){
+//    public void AddFilesFromDB(){
+//        List<FileContainer> fileContainerListFromDB = fileRepoController.GetAllFilesFromDB();
+//        for (FileContainer file:fileContainerListFromDB) {
+//            if(!fileList.contains(file)){
+//                fileList.add(file);
+//            }
+//        }
+//    }
+
+    public void AddFilesFromDB() {
         List<FileContainer> fileContainerListFromDB = fileRepoController.GetAllFilesFromDB();
-        for (FileContainer file:fileContainerListFromDB) {
-            if(!fileList.contains(file)){
+        for (FileContainer file : fileContainerListFromDB) {
+            String fileName = file.getFileName();
+            boolean fileAlreadyExists = fileList.stream()
+                    .anyMatch(existingFile -> existingFile.getFileName().equals(fileName));
+            if (!fileAlreadyExists) {
                 fileList.add(file);
             }
         }
     }
+
+
+    private void deleteSavedFileFromDirectory(FileContainer fileContainer) throws IOException {
+        Path filePath = Paths.get(fileContainer.getAbsolutePath());
+        Files.delete(filePath);
+    }
+
 }

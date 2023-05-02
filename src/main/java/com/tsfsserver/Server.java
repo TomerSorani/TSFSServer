@@ -68,9 +68,13 @@ public class Server {
         try {
             File dest = copyFile(fileContainer);
             fileContainer.setAbsolutePath(dest.getAbsolutePath());
-            filesStorage.AddToFileList(fileContainer);
-            //fileRepoController.SaveFileToDB(fileContainer); למחוק
-            response = ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body("File added");
+            if(filesStorage.CheckIfFileNameExist(fileContainer.getFileName())){
+                response = ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body("File name already exist");
+            }
+            else {
+                filesStorage.AddToFileList(fileContainer);
+                response = ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body("File added");
+            }
         }
         catch (IOException ioException){
             response = ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body("Error occurred");
@@ -82,6 +86,7 @@ public class Server {
     @GetMapping("/TSFS/GetFiles")
     public ResponseEntity<String> GetFiles(){
         ResponseEntity<String> response;
+        filesStorage.AddFilesFromDB();
 
         response = ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(gson.toJson(filesStorage.GetFileContainers()));
         return response;
