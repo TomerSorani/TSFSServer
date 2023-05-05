@@ -22,11 +22,13 @@ public class Server {
     private final Gson gson;
     private FilesStorage filesStorage;
     private static FileRepoController fileRepoController;
+    private AccessUsers accessUsers;
 
     public Server() {
         this.gson = new Gson();
         filesStorage = new FilesStorage(fileRepoController);
         filesStorage.AddFilesFromDB();
+        accessUsers = new AccessUsers();
     }
 
     public static void UpdateFileRepoController(FileRepoController fileRepoController){
@@ -105,12 +107,15 @@ public class Server {
         return response;
     }
 
-    @GetMapping("/TSFS/Access")//was 'a'
+    @GetMapping("/TSFS/Access")
     public ResponseEntity<String> Access(@RequestParam String userName, @RequestParam String password){
         ResponseEntity<String> response;
-
-        response = ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(gson.toJson("access approve"));
-        response = ResponseEntity.status(HttpStatus.FORBIDDEN).contentType(MediaType.APPLICATION_JSON).body(gson.toJson("access denied"));
+        if(accessUsers.CheckIfValidUserExist(userName,password)){
+            response = ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(gson.toJson("access approve"));
+        }
+        else {
+            response = ResponseEntity.status(HttpStatus.FORBIDDEN).contentType(MediaType.APPLICATION_JSON).body(gson.toJson("access denied"));
+        }
 
         return response;
     }
@@ -135,6 +140,16 @@ public class Server {
         return response;
     }
 
+    @DeleteMapping("/TSFS/ScanAndDeleteNonFiles")
+    public ResponseEntity<String> ScanAndDeleteNonFiles(){
+        ResponseEntity<String> response;
+        filesStorage.ScanAndDeleteNonFiles();
+
+        response = ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(gson.toJson("all files has been updated"));
+
+        return response;
+    }
+
     private File copyFile(FileContainer fileContainer) throws IOException {
         File original = new File(fileContainer.getAbsolutePath());
 
@@ -151,4 +166,6 @@ public class Server {
 
         return dest;
     }
+
+
 }

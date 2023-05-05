@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -105,4 +106,28 @@ public class FilesStorage {
         Files.delete(filePath);
     }
 
+//    private void scanAndDeleteNonFiles(){
+//        List<FileContainer> fileContainerListToDelete = new ArrayList<>();
+//        for(FileContainer fileContainer:fileList){
+//          Path path = Paths.get(fileContainer.getAbsolutePath());
+//            if(!Files.exists(path)){
+//                fileContainerListToDelete.add(fileContainer);
+//            }
+//        }
+//        fileContainerListToDelete.forEach(fileContainer -> fileList.remove(fileContainer));
+//    }
+
+    public void ScanAndDeleteNonFiles() {
+        List<FileContainer> filesToDelete = new ArrayList<>();
+        for(FileContainer fileContainer : fileList){
+            String path = fileContainer.getAbsolutePath();
+            if(!Files.exists(Paths.get(path))){
+                filesToDelete.add(fileContainer);
+            }
+        }
+        filesToDelete.forEach(fileContainer -> DeleteFile(fileContainer.getFileName()));
+
+    }
 }
+
+
