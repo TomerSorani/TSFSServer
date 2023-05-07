@@ -9,7 +9,10 @@ public class AccessUsers {
     public AccessUsers() {
         users = new HashMap<>();
         users.put("tomer","123");
+        users.put("tihnun","12345");
         users.put("control room","12345");
+        users.put("sadran","12345");
+        users.put("pniot","12345");
         users.put("p","");
     }
 
