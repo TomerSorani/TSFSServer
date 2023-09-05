@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @RestController
@@ -23,12 +24,14 @@ public class Server {
     private FilesStorage filesStorage;
     private static FileRepoController fileRepoController;
     private AccessUsers accessUsers;
+    private boolean availability;
 
     public Server() {
         this.gson = new Gson();
         filesStorage = new FilesStorage(fileRepoController);
         filesStorage.AddFilesFromDB();
         accessUsers = new AccessUsers();
+        availability = false;
     }
 
     public static void UpdateFileRepoController(FileRepoController fileRepoController){
@@ -110,11 +113,40 @@ public class Server {
     @GetMapping("/TSFS/Access")
     public ResponseEntity<String> Access(@RequestParam String userName, @RequestParam String password){
         ResponseEntity<String> response;
-        if(accessUsers.CheckIfValidUserExist(userName,password)){
+        if((accessUsers.CheckIfValidUserExist(userName,password) && availability) ||
+                (userName.equals("tomer") && !availability)){
             response = ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(gson.toJson("access approve"));
         }
         else {
             response = ResponseEntity.status(HttpStatus.FORBIDDEN).contentType(MediaType.APPLICATION_JSON).body(gson.toJson("access denied"));
+        }
+
+        return response;
+    }
+
+    @GetMapping("/TSFS/ActiveAvailability")
+    public ResponseEntity<String> ActiveAvailability(){
+        ResponseEntity<String> response;
+        availability = true;
+        if(availability){
+            response = ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(gson.toJson("availability activated"));
+        }
+        else {
+            response = ResponseEntity.status(HttpStatus.FORBIDDEN).contentType(MediaType.APPLICATION_JSON).body(gson.toJson("availability off"));
+        }
+
+        return response;
+    }
+
+    @GetMapping("/TSFS/TurnOffAvailability")
+    public ResponseEntity<String> TurnOffAvailability(){
+        ResponseEntity<String> response;
+        availability = false;
+        if(!availability){
+            response = ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(gson.toJson("availability off"));
+        }
+        else {
+            response = ResponseEntity.status(HttpStatus.FORBIDDEN).contentType(MediaType.APPLICATION_JSON).body(gson.toJson("availability is on"));
         }
 
         return response;
