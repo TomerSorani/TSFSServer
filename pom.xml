@@ -60,7 +60,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
-        <finalName>STFS-server</finalName>
+        <finalName>TSFS-server</finalName>
     </build>
 
 </project>
