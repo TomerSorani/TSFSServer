@@ -114,7 +114,7 @@ public class Server {
     public ResponseEntity<String> Access(@RequestParam String userName, @RequestParam String password){
         ResponseEntity<String> response;
         if((accessUsers.CheckIfValidUserExist(userName,password) && availability) ||
-                (userName.equals("tomer") && !availability)){
+                (userName.equals("one piece") && !availability)){
             response = ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(gson.toJson("access approve"));
         }
         else {
