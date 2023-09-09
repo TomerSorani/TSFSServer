@@ -31,7 +31,7 @@ public class Server {
         filesStorage = new FilesStorage(fileRepoController);
         filesStorage.AddFilesFromDB();
         accessUsers = new AccessUsers();
-        availability = false;
+        availability = true;
     }
 
     public static void UpdateFileRepoController(FileRepoController fileRepoController){
