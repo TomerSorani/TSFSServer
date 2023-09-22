@@ -8,12 +8,13 @@ public class AccessUsers {
 
     public AccessUsers() {
         users = new HashMap<>();
-        users.put("tomer","123");
-        users.put("tihnun","12345");
-        users.put("control room","12345");
+        users.put("tomer","ts123");
+        users.put("tihnun","t12345");
+        users.put("control room","cn12345");
+        users.put("bakara","cn12345");
         users.put("sadran","12345");
-        users.put("pniot","12345");
-        users.put("mantam","12345");
+        users.put("pniot","p12345");
+        users.put("mantam","m12345");
         users.put("p","");
     }
 
